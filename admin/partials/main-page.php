@@ -2,4 +2,7 @@
 
 
 ?>
-<h1>Stock SMS</h1>
+<div class="wrap">
+    <h1 class="wp-heading-inline">Stock SMS</h1>
+    <hr/>
+</div>

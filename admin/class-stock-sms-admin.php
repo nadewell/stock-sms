@@ -113,7 +113,7 @@ class Stock_Sms_Admin {
 		add_submenu_page( 'stock_tips', 'Customer List', 'Customer List', 'manage_options', 'customer_list', array( $this,'customer_list_callback' ) );
 		add_submenu_page( 'stock_tips', 'Subscription List', 'Subscription List', 'manage_options', 'subscription_list', array( $this,'subscription_list_callback' ) );
 		add_submenu_page( 'stock_tips', 'Today\'s Tips', 'Today\'s Tips', 'read', 'today_tips', array( $this,'today_tips_callback' ) );
-		add_submenu_page( 'stock_tips', 'Add New', 'Add New', 'manage_options', 'tip-new', array( $this,'tip_new_callback' ) );
+		add_submenu_page( 'stock_tips', 'Add New Tips', 'Add New Tips', 'manage_options', 'tip-new', array( $this,'tip_new_callback' ) );
 	}
 	function stock_tips_callback(){
 		require_once( plugin_dir_path( __FILE__ ).'/partials/main-page.php' );

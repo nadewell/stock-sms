@@ -31,7 +31,8 @@ $subscriptions = $wpdb->get_results(
 );
 ?>
 <div class="wrap">
-    <h1>Stock SMS | Subscription List</h1>
+    <h1 class="wp-heading-inline">Subscription List</h1>
+    <hr/>
     <table class="wp-list-table widefat fixed striped" id="subscription_list">
         <thead>
             <tr>

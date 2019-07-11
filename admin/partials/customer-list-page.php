@@ -7,7 +7,8 @@ $args = array(
 $customers = get_users($args);
 ?>
 <div class="wrap">
-    <h1>Stock SMS | Customer List</h1>
+    <h1 class="wp-heading-inline">Stock SMS | Customer List</h1>
+    <hr/>
     <table class="wp-list-table widefat fixed striped" id="customer_list">
         <thead>
             <tr>

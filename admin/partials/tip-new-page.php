@@ -11,7 +11,7 @@ $tips = $wpdb->get_results(
 );
 ?>
 <div class="wrap">
-    <h1 class="wp-heading-inline">Stock SMS | Add New Tip</h1>
+    <h1 class="wp-heading-inline">Add New Tips</h1>
     <hr/>
     <h2>Entry Tip</h2>
     <form method="POST" id="entry_form">

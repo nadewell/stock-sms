@@ -6,7 +6,15 @@ $tips = $wpdb->get_results( "SELECT * FROM $tips_table", OBJECT );
 ?>
 <div class="wrap">
     <h1 class="wp-heading-inline">Today's Tips</h1>
+    <?php 
+        $current_user = wp_get_current_user();
+        if( in_array( 'administrator',$current_user->roles ) ):
+    ?>
     <a href="<?php echo admin_url('admin.php?page=tip-new'); ?>" class="page-title-action">Add New</a>
+    <?php 
+        endif; 
+    ?>
+    <hr/>
     <table class="wp-list-table widefat fixed striped"  id="tips_list">
         <thead>
             <tr>

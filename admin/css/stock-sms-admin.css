@@ -7,3 +7,12 @@
     width: 20px;
     height: auto;
 }
+
+#customer_list.widefat tfoot td.check-column,
+#customer_list.widefat thead td.check-column,
+#subscription_list.widefat tfoot td.check-column,
+#subscription_list.widefat thead td.check-column,
+#tips_list.widefat tfoot td.check-column,
+#tips_list.widefat thead td.check-column {
+    padding-top: 0px !important;
+}

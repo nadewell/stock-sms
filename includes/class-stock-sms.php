@@ -156,6 +156,13 @@ class Stock_Sms {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'stock_tips_pages' );
+		$this->loader->add_action( 'register_form', $plugin_admin, 'add_registration_fields' );
+		$this->loader->add_filter( 'registration_errors', $plugin_admin, 'sanitize_registration_fields',10,3 );
+		$this->loader->add_action( 'user_register', $plugin_admin, 'registration_save' );
+		$this->loader->add_action( 'show_user_profile', $plugin_admin, 'user_profile_fields');
+		$this->loader->add_action( 'edit_user_profile', $plugin_admin, 'user_profile_fields');
+		// $this->loader->add_action( 'personal_options_update', $plugin_admin, 'save_user_profile_fields' );
+		// $this->loader->add_action( 'edit_user_profile_update', $plugin_admin, 'save_user_profile_fields' );
 		$this->loader->add_action( 'wp_ajax_add_entry_tip', $plugin_admin, 'add_entry_tip' );
 		$this->loader->add_action( 'wp_nopriv_ajax_add_entry_tip', $plugin_admin, 'add_entry_tip' );
 		$this->loader->add_action( 'wp_ajax_add_exit_tip', $plugin_admin, 'add_exit_tip' );

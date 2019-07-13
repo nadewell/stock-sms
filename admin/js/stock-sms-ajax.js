@@ -18,10 +18,12 @@ jQuery(document).ready(function(){
                 'entry_time':entry_time
             },
             success:function(data){
+                console.log('success');
                 jQuery('#entry_form').after('<pre>'+data+'</pre>');
                 jQuery('#entry_form').after(data);
             },
             error:function(data){
+                console.log('failed');
                 jQuery('#entry_form').after('<pre>'+data+'</pre>');
                 jQuery('#entry_form').after(data);
             }

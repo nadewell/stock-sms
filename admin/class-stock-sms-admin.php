@@ -100,6 +100,59 @@ class Stock_Sms_Admin {
 
 	}
 
+	//Add New Registration Fields
+	public function add_registration_fields() {
+		//Get and set any values already sent
+		$user_mobile = ( isset( $_POST['user_mobile'] ) ) ? $_POST['user_mobile'] : '';
+		?>
+		<p>
+			<label for="user_mobile"><?php _e( 'Mobile', 'stock-sms' ) ?><br />
+			<input type="text" name="user_mobile" id="user_mobile" class="input" value="<?php echo esc_attr( stripslashes( $user_mobile ) ); ?>" /></label>
+		</p>
+		<?php
+	}
+
+	public function sanitize_registration_fields( $errors, $sanitized_user_login, $user_email ) {
+		if ( empty( $_POST['user_mobile'] ) ) {
+			$errors->add( 'user_mobile_error', __( '<strong>ERROR</strong>: Please enter your mobile number.', 'stock-sms' ) );
+		}elseif( strlen( trim($_POST['user_mobile']) ) != 10 ){
+			$errors->add( 'user_mobile_error', __( '<strong>ERROR</strong>: Invalid mobile number.', 'stock-sms' ) );
+		}
+		return $errors;
+	}
+
+	public function registration_save( $user_id ) {
+		if ( ! empty( $_POST['user_mobile'] ) ){
+			update_user_meta($user_id, 'user_mobile', $_POST['user_mobile']);
+		}	
+	}
+
+	// show/edit user mobile field in profile
+	public function user_profile_fields( $user ) {
+	?>
+		<table class="form-table">
+			<tr>
+				<th>
+					<label for="user_mobile"><?php esc_html_e( 'Mobile Number' ); ?></label>
+				</th>
+				<td>
+					<input type="text" name="user_mobile" id="user_mobile" value="<?php echo esc_attr( get_the_author_meta( 'user_mobile', $user->ID ) ); ?>" class="regular-text" disabled/>
+					<br><span class="description"><?php esc_html_e( 'Your Mobile Number.', 'stock-sms' ); ?></span>
+				</td>
+			</tr>
+		</table>
+	<?php
+	}
+	// save user mobile field in profile
+	public function save_user_profile_fields( $user_id ) {
+		if ( !current_user_can( 'edit_user', $user_id ) ) { 
+			return false; 
+		}
+		if( !empty( $_POST['user_mobile'] ) ){
+			update_user_meta( $user_id, 'user_mobile', $_POST['user_mobile'] );	
+		}
+	}
+	// Stock SMS Plugin 
 	public function stock_tips_pages(){
 		add_menu_page( 
 			'Stock Tips',
@@ -154,6 +207,36 @@ class Stock_Sms_Admin {
 				'%s'
 			) 
 		);
+		//message to send
+		$message = 'Stock Name:'.$stock_name.', Stock Qty:'.$stock_qty.', Entry Point:'.$entry_point;
+		// Initial Data for curl operation
+		$api_key= 'WDW1H5NKPJ4YY4DV0NEHGX2NRT69XVOJ';
+		$secret_key= '2LB06GR4SCSPZHNY';
+		$use_type = 'stage';
+		$sender_id = '';
+		$args = array(
+			'role' => 'customer',
+			'orderby' => 'display_name',
+			'order' => 'ASC'
+		);
+		$customers = get_users($args);
+		foreach ($customers as $customer) {
+			$user_id = $customer->data->ID;
+			$user_mobile = get_user_meta($user_id, 'user_mobile', true);
+			$url="https://www.way2sms.com/api/v1/sendCampaign";
+			$message = urlencode( $message );// urlencode your message
+			$curl = curl_init();
+			curl_setopt($curl, CURLOPT_POST, 1);// set post data to true
+			curl_setopt($curl, CURLOPT_POSTFIELDS, "apikey=$api_key&secret=$secret_key&usetype=$use_type&phone=$user_mobile&senderid=$sender_id&message=$message");// post data
+			// query parameter values must be given without squarebrackets.
+			// Optional Authentication:
+			curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+			curl_setopt($curl, CURLOPT_URL, $url);
+			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+			$result = curl_exec($curl);
+			curl_close($curl);
+			echo $result;
+		}
 		wp_die();
 	}
 	public function add_exit_tip(){
@@ -164,6 +247,16 @@ class Stock_Sms_Admin {
 		$exit_point= $_POST['exit_point'];
 		$exit_time= $_POST['exit_time'];
 
+		$tip = $wpdb->get_results( 
+			"SELECT 
+				* 
+			FROM 
+				$tips_table
+			WHERE
+				$tips_table.tip_id=$tip_id",
+			OBJECT  
+		);
+		$stock_name = $tip[0]->stock_name;
 		$wpdb->update( 
 			$tips_table, 
 			array( 
@@ -177,6 +270,38 @@ class Stock_Sms_Admin {
 			), 
 			array( '%d' ) 
 		);
+
+		//message to send
+		$message = 'Stock Name:'.$stock_name.', Exit Point:'.$exit_point;
+		// Initial Data for curl operation
+		$api_key= 'WDW1H5NKPJ4YY4DV0NEHGX2NRT69XVOJ';
+		$secret_key= '2LB06GR4SCSPZHNY';
+		$use_type = 'stage';
+		$sender_id = '';
+		
+		$args = array(
+			'role' => 'customer',
+			'orderby' => 'display_name',
+			'order' => 'ASC'
+		);
+		$customers = get_users($args);
+		foreach ($customers as $customer) {
+			$user_id = $customer->data->ID;
+			$user_mobile = get_user_meta($user_id, 'user_mobile', true);
+			$url="https://www.way2sms.com/api/v1/sendCampaign";
+			$message = urlencode( $message );// urlencode your message
+			$curl = curl_init();
+			curl_setopt($curl, CURLOPT_POST, 1);// set post data to true
+			curl_setopt($curl, CURLOPT_POSTFIELDS, "apikey=$api_key&secret=$secret_key&usetype=$use_type&phone=$user_mobile&senderid=$sender_id&message=$message");// post data
+			// query parameter values must be given without squarebrackets.
+			// Optional Authentication:
+			curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+			curl_setopt($curl, CURLOPT_URL, $url);
+			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+			$result = curl_exec($curl);
+			curl_close($curl);
+			echo $result;
+		}
 		wp_die();
 	}
 }

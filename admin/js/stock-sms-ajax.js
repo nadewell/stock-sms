@@ -19,6 +19,7 @@ jQuery(document).ready(function(){
             },
             success:function(data){
                 console.log('success');
+                console.log(data.code);
                 jQuery('#entry_form').after('<pre>'+data+'</pre>');
                 jQuery('#entry_form').after(data);
             },

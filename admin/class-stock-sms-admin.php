@@ -329,6 +329,10 @@ class Stock_Sms_Admin {
 	}
 
 	public function add_extra_tip(){
+		global $wpdb;
+		$subscription_table = $wpdb->prefix."subscription";
+		$user_table = $wpdb->prefix."users";
+
 		$extra_tip= $_POST['extra_tip'];
 		//message to send
 		$message = $extra_tip;

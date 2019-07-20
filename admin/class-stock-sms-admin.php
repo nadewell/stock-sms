@@ -186,6 +186,8 @@ class Stock_Sms_Admin {
 	public function add_entry_tip(){
 		global $wpdb;
 		$tips_table = $wpdb->prefix."tips";
+		$subscription_table = $wpdb->prefix."subscription";
+		$user_table = $wpdb->prefix."users";
 
 		$stock_name= $_POST['stock_name'];
 		$stock_qty= $_POST['stock_qty'];
@@ -214,34 +216,45 @@ class Stock_Sms_Admin {
 		$secret_key= '2LB06GR4SCSPZHNY';
 		$use_type = 'stage';
 		$sender_id = '';
-		$args = array(
-			'role' => 'customer',
-			'orderby' => 'display_name',
-			'order' => 'ASC'
+
+		// get customer who has subscribed to package
+		$customers = $wpdb->get_results( 
+			"SELECT 
+				* 
+			FROM 
+				$user_table,
+				$subscription_table
+			WHERE
+				$user_table.ID=$subscription_table.user_id",
+			OBJECT  
 		);
-		$customers = get_users($args);
+		
 		foreach ($customers as $customer) {
-			$user_id = $customer->data->ID;
+			$user_id = $customer->ID;
 			$user_mobile = get_user_meta($user_id, 'user_mobile', true);
-			$url="https://www.way2sms.com/api/v1/sendCampaign";
-			$message = urlencode( $message );// urlencode your message
-			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_POST, 1);// set post data to true
-			curl_setopt($curl, CURLOPT_POSTFIELDS, "apikey=$api_key&secret=$secret_key&usetype=$use_type&phone=$user_mobile&senderid=$sender_id&message=$message");// post data
-			// query parameter values must be given without squarebrackets.
-			// Optional Authentication:
-			curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-			curl_setopt($curl, CURLOPT_URL, $url);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-			$result = curl_exec($curl);
-			curl_close($curl);
-			echo $result;
+			if( $customer->subscription_timeperiod != 0 ){
+				$url="https://www.way2sms.com/api/v1/sendCampaign";
+				$message = urlencode( $message );// urlencode your message
+				$curl = curl_init();
+				curl_setopt($curl, CURLOPT_POST, 1);// set post data to true
+				curl_setopt($curl, CURLOPT_POSTFIELDS, "apikey=$api_key&secret=$secret_key&usetype=$use_type&phone=$user_mobile&senderid=$sender_id&message=$message");// post data
+				// query parameter values must be given without squarebrackets.
+				// Optional Authentication:
+				curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+				curl_setopt($curl, CURLOPT_URL, $url);
+				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+				$result = curl_exec($curl);
+				curl_close($curl);
+				echo $result;
+			}
 		}
 		wp_die();
 	}
 	public function add_exit_tip(){
 		global $wpdb;
 		$tips_table = $wpdb->prefix."tips";
+		$subscription_table = $wpdb->prefix."subscription";
+		$user_table = $wpdb->prefix."users";
 
 		$tip_id= $_POST['tip_id'];
 		$exit_point= $_POST['exit_point'];
@@ -256,6 +269,7 @@ class Stock_Sms_Admin {
 				$tips_table.tip_id=$tip_id",
 			OBJECT  
 		);
+		//Update Tip exit point and time
 		$stock_name = $tip[0]->stock_name;
 		$wpdb->update( 
 			$tips_table, 
@@ -270,7 +284,18 @@ class Stock_Sms_Admin {
 			), 
 			array( '%d' ) 
 		);
-
+		// get customer who has subscribed to package
+		$customers = $wpdb->get_results( 
+			"SELECT 
+				* 
+			FROM 
+				$user_table,
+				$subscription_table
+			WHERE
+				$user_table.ID=$subscription_table.user_id",
+			OBJECT  
+		);
+		
 		//message to send
 		$message = 'Stock Name:'.$stock_name.', Exit Point:'.$exit_point;
 		// Initial Data for curl operation
@@ -278,29 +303,24 @@ class Stock_Sms_Admin {
 		$secret_key= '2LB06GR4SCSPZHNY';
 		$use_type = 'stage';
 		$sender_id = '';
-		
-		$args = array(
-			'role' => 'customer',
-			'orderby' => 'display_name',
-			'order' => 'ASC'
-		);
-		$customers = get_users($args);
 		foreach ($customers as $customer) {
-			$user_id = $customer->data->ID;
+			$user_id = $customer->ID;
 			$user_mobile = get_user_meta($user_id, 'user_mobile', true);
-			$url="https://www.way2sms.com/api/v1/sendCampaign";
-			$message = urlencode( $message );// urlencode your message
-			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_POST, 1);// set post data to true
-			curl_setopt($curl, CURLOPT_POSTFIELDS, "apikey=$api_key&secret=$secret_key&usetype=$use_type&phone=$user_mobile&senderid=$sender_id&message=$message");// post data
-			// query parameter values must be given without squarebrackets.
-			// Optional Authentication:
-			curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-			curl_setopt($curl, CURLOPT_URL, $url);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-			$result = curl_exec($curl);
-			curl_close($curl);
-			echo $result;
+			if( $customer->subscription_timeperiod != 0 ){
+				$url="https://www.way2sms.com/api/v1/sendCampaign";
+				$message = urlencode( $message );// urlencode your message
+				$curl = curl_init();
+				curl_setopt($curl, CURLOPT_POST, 1);// set post data to true
+				curl_setopt($curl, CURLOPT_POSTFIELDS, "apikey=$api_key&secret=$secret_key&usetype=$use_type&phone=$user_mobile&senderid=$sender_id&message=$message");// post data
+				// query parameter values must be given without squarebrackets.
+				// Optional Authentication:
+				curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+				curl_setopt($curl, CURLOPT_URL, $url);
+				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+				$result = curl_exec($curl);
+				curl_close($curl);
+				echo $result;
+			}
 		}
 		wp_die();
 	}

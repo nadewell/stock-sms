@@ -6,6 +6,7 @@ jQuery(document).ready(function(){
         var stock_qty = jQuery('#stock_qty').val();
         var entry_point = jQuery('#entry_point').val();
         var entry_time = jQuery('#entry_time').val();
+        var stop_loss = jQuery('#stop_loss').val();
         console.log('clicked');
         jQuery.ajax({
             url: ajax_object.ajax_url,
@@ -15,18 +16,16 @@ jQuery(document).ready(function(){
                 'stock_name':stock_name,
                 'stock_qty':stock_qty,
                 'entry_point':entry_point,
-                'entry_time':entry_time
+                'entry_time':entry_time,
+                'stop_loss':stop_loss
             },
             success:function(data){
                 console.log('success');
-                console.log(data.code);
-                if(data.code === '200'){
-                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
-                }
-                else if(data.code === '400'){
-                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
-                }else if(data.code === '500'){
-                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
+                console.log(data);
+                if(data.code === '200 OK'){
+                    jQuery('#extra_form').after( get_noticebar_html(data.status,data.message) );
+                }else{
+                    jQuery('#extra_form').after( get_noticebar_html(data.status,data.message) );
                 }
             },
             error:function(data){
@@ -53,12 +52,10 @@ jQuery(document).ready(function(){
             },
             success:function(data){
                 console.log('success');
-                if(data.code === '200'){
-                    jQuery('#exit_form').after( get_noticebar_html(data.status,data.message) );
-                }else if(data.code === '400'){
-                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
-                }else if(data.code === '500'){
-                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
+                if(data.code === '200 OK'){
+                    jQuery('#extra_form').after( get_noticebar_html(data.status,data.message) );
+                }else{
+                    jQuery('#extra_form').after( get_noticebar_html(data.status,data.message) );
                 }
             },
             error:function(data){
@@ -78,21 +75,21 @@ jQuery(document).ready(function(){
             type: 'POST',
             data: {
                 action:'add_extra_tip',
-                'extra_tip':extra_tip
+                'extra_tip': extra_tip
             },
             success:function(data){
                 console.log('success');
-                if(data.code === '200'){
-                    jQuery('#exit_form').after( get_noticebar_html(data.status,data.message) );
-                }else if(data.code === '400'){
-                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
-                }else if(data.code === '500'){
-                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
+                console.log(data);
+                if(data.code === '200 OK'){
+                    jQuery('#extra_form').after( get_noticebar_html(data.status,data.message) );
+                }else{
+                    jQuery('#extra_form').after( get_noticebar_html(data.status,data.message) );
                 }
             },
             error:function(data){
                 console.log('failed');
-                jQuery('#exit_form').after( get_noticebar_html(data.status,data.message) );
+                console.log(data);
+                jQuery('#extra_form').after( get_noticebar_html(data.status,data.message) );
             }
         })
     });

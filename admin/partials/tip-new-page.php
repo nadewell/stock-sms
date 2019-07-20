@@ -78,4 +78,20 @@ $tips = $wpdb->get_results(
             </tbody>
         </table>
     </form>
+    <br/>
+    <hr/>
+    <h2>Extra Tip</h2>
+    <form method="POST" id="extra_form">
+        <table class="wp-list-table widefat fixed striped posts">
+            <tbody>
+                <tr>
+                    <td>Message</td>
+                    <td><textarea name="extra_tip" id="extra_tip"><?php echo ( isset($_POST['extra_tip']) )?($_POST['extra_tip']):(""); ?></textarea></td> 
+                </tr>
+                <tr>
+                    <td><input class="button button-primary" type="submit" name="submit_extra" id="submit_extra" value="Submit"></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
 </div>

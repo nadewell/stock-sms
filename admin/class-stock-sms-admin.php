@@ -193,6 +193,7 @@ class Stock_Sms_Admin {
 		$stock_qty= $_POST['stock_qty'];
 		$entry_point= $_POST['entry_point'];
 		$entry_time= $_POST['entry_time'];
+		$stop_loss= $_POST['stop_loss'];
 
 		$wpdb->insert( 
 			$tips_table, 
@@ -200,17 +201,19 @@ class Stock_Sms_Admin {
 				'stock_name'		=> $stock_name, 
 				'stock_qty' 		=> $stock_qty,
 				'entry_point'		=> $entry_point,
-				'entry_timestamp'	=> $entry_time
+				'entry_timestamp'	=> $entry_time,
+				'stop_loss'			=> $stop_loss
 			), 
 			array( 
 				'%s', 
 				'%d',
 				'%s',
+				'%s',
 				'%s'
 			) 
 		);
 		//message to send
-		$message = 'Stock Name:'.$stock_name.', Stock Qty:'.$stock_qty.', Entry Point:'.$entry_point;
+		$message = 'Stock Name:'.$stock_name.', Stock Qty:'.$stock_qty.', Entry Point:'.$entry_point.', Stop Loss:'.$stop_loss;
 		// Initial Data for curl operation
 		$api_key= 'WDW1H5NKPJ4YY4DV0NEHGX2NRT69XVOJ';
 		$secret_key= '2LB06GR4SCSPZHNY';
@@ -303,6 +306,50 @@ class Stock_Sms_Admin {
 		$secret_key= '2LB06GR4SCSPZHNY';
 		$use_type = 'stage';
 		$sender_id = '';
+		foreach ($customers as $customer) {
+			$user_id = $customer->ID;
+			$user_mobile = get_user_meta($user_id, 'user_mobile', true);
+			if( $customer->subscription_timeperiod != 0 ){
+				$url="https://www.way2sms.com/api/v1/sendCampaign";
+				$message = urlencode( $message );// urlencode your message
+				$curl = curl_init();
+				curl_setopt($curl, CURLOPT_POST, 1);// set post data to true
+				curl_setopt($curl, CURLOPT_POSTFIELDS, "apikey=$api_key&secret=$secret_key&usetype=$use_type&phone=$user_mobile&senderid=$sender_id&message=$message");// post data
+				// query parameter values must be given without squarebrackets.
+				// Optional Authentication:
+				curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+				curl_setopt($curl, CURLOPT_URL, $url);
+				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+				$result = curl_exec($curl);
+				curl_close($curl);
+				echo $result;
+			}
+		}
+		wp_die();
+	}
+
+	public function add_extra_tip(){
+		$extra_tip= $_POST['extra_tip'];
+		//message to send
+		$message = $extra_tip;
+		// Initial Data for curl operation
+		$api_key= 'WDW1H5NKPJ4YY4DV0NEHGX2NRT69XVOJ';
+		$secret_key= '2LB06GR4SCSPZHNY';
+		$use_type = 'stage';
+		$sender_id = '';
+
+		// get customer who has subscribed to package
+		$customers = $wpdb->get_results( 
+			"SELECT 
+				* 
+			FROM 
+				$user_table,
+				$subscription_table
+			WHERE
+				$user_table.ID=$subscription_table.user_id",
+			OBJECT  
+		);
+		
 		foreach ($customers as $customer) {
 			$user_id = $customer->ID;
 			$user_mobile = get_user_meta($user_id, 'user_mobile', true);

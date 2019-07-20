@@ -167,6 +167,8 @@ class Stock_Sms {
 		$this->loader->add_action( 'wp_nopriv_ajax_add_entry_tip', $plugin_admin, 'add_entry_tip' );
 		$this->loader->add_action( 'wp_ajax_add_exit_tip', $plugin_admin, 'add_exit_tip' );
 		$this->loader->add_action( 'wp_nopriv_ajax_add_exit_tip', $plugin_admin, 'add_exit_tip' );
+		$this->loader->add_action( 'wp_ajax_add_extra_tip', $plugin_admin, 'add_extra_tip' );
+		$this->loader->add_action( 'wp_nopriv_ajax_add_extra_tip', $plugin_admin, 'add_extra_tip' );
 	}
 
 	/**

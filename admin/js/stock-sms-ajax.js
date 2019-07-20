@@ -20,13 +20,18 @@ jQuery(document).ready(function(){
             success:function(data){
                 console.log('success');
                 console.log(data.code);
-                jQuery('#entry_form').after('<pre>'+data+'</pre>');
-                jQuery('#entry_form').after(data);
+                if(data.code === '200'){
+                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
+                }
+                else if(data.code === '400'){
+                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
+                }else if(data.code === '500'){
+                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
+                }
             },
             error:function(data){
                 console.log('failed');
-                jQuery('#entry_form').after('<pre>'+data+'</pre>');
-                jQuery('#entry_form').after(data);
+                jQuery('#exit_form').after( get_noticebar_html(data.status,data.message) );
             }
         })
     });
@@ -47,13 +52,59 @@ jQuery(document).ready(function(){
                 'exit_time':exit_time
             },
             success:function(data){
-                jQuery('#exit_form').after('<pre>'+data+'</pre>');
-                jQuery('#exit_form').after(data);
+                console.log('success');
+                if(data.code === '200'){
+                    jQuery('#exit_form').after( get_noticebar_html(data.status,data.message) );
+                }else if(data.code === '400'){
+                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
+                }else if(data.code === '500'){
+                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
+                }
             },
             error:function(data){
-                jQuery('#exit_form').after('<pre>'+data+'</pre>');
-                jQuery('#exit_form').after(data);
+                console.log('failed');
+                jQuery('#exit_form').after( get_noticebar_html(data.status,data.message) );
+            }
+        })
+    });
+
+    //stock exit point tips
+    jQuery('#extra_form #submit_extra').on('click',function(event){
+        event.preventDefault();
+        var extra_tip = jQuery('#extra_tip').val();
+        console.log('clicked');
+        jQuery.ajax({
+            url: ajax_object.ajax_url,
+            type: 'POST',
+            data: {
+                action:'add_extra_tip',
+                'extra_tip':extra_tip
+            },
+            success:function(data){
+                console.log('success');
+                if(data.code === '200'){
+                    jQuery('#exit_form').after( get_noticebar_html(data.status,data.message) );
+                }else if(data.code === '400'){
+                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
+                }else if(data.code === '500'){
+                    jQuery('#entry_form').after( get_noticebar_html(data.status,data.message) );
+                }
+            },
+            error:function(data){
+                console.log('failed');
+                jQuery('#exit_form').after( get_noticebar_html(data.status,data.message) );
             }
         })
     });
 });
+
+function get_noticebar_html(status,msg){
+    var html = '';
+    html += '<div id="message" class="updated notice is-dismissible '+status+'">';
+    html += '<p>'+msg+'</p>';
+    html += '<button type="button" class="notice-dismiss">';
+    html += '<span class="screen-reader-text">Dismiss this notice.</span>';
+    html += '</button>';
+    html += '</div>';
+    return html;
+}

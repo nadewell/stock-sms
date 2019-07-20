@@ -82,6 +82,7 @@ class Stock_Sms_Activator {
 				`stock_qty` TEXT(10) NOT NULL,
 				`entry_point` TEXT(10) NOT NULL,
 				`entry_timestamp` TEXT(30) NOT NULL,
+				`stop_loss` TEXT(10) NOT NULL,
 				`exit_point` TEXT(10),
 				`exit_timestamp` TEXT(30),
 				PRIMARY KEY  (`tip_id`)
